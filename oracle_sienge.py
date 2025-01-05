@@ -10,7 +10,8 @@ from langchain_community.embeddings import OllamaEmbeddings, OpenAIEmbeddings #D
 from openai import OpenAI
 from langchain_openai.embeddings import OpenAIEmbeddings
 from langchain_openai import ChatOpenAI
-from pathlib import Path    
+from pathlib import Path
+import os
 
 # Carrega variáveis de ambiente e chaves de acesso.
 _ = load_dotenv(find_dotenv())
@@ -28,12 +29,20 @@ llm = ChatOpenAI()
 @st.cache_resource #avaliar o uso do st.cache_data, pois não rodou.. mesmo sendo a indicação da Asimov
 def load_csv_data():
     try:
-        # Substituia aqui por sua base de conhecimentos.
-        loader = CSVLoader(file_path="knowledge_base_sienge.csv") #Documento csv com os dados específicos, exemplo FAQ da empresa.
-        embeddings = OpenAIEmbeddings() # O Embedding permite transformar textos em números (vetores) e facilitar a localização de documentos semelhantes.
+        st.write("Carregando dados CSV...")  # Log para depuração
+        file_path = "knowledge_base_sienge.csv"
+        absolute_path = os.path.abspath(file_path)
+        st.write(f"Caminho absoluto do arquivo CSV: {absolute_path}")
+        
+        if not Path(file_path).is_file():
+            st.error(f"Arquivo {file_path} não encontrado.")
+            return None
+        
+        loader = CSVLoader(file_path=file_path)  # Documento csv com os dados específicos, exemplo FAQ da empresa.
+        embeddings = OpenAIEmbeddings()  # O Embedding permite transformar textos em números (vetores) e facilitar a localização de documentos semelhantes.
         documents = loader.load()
-        vectorstore = FAISS.from_documents(documents, embeddings) #FAISS é um 'banco de dados vetoriais' que permite guardar os documentos já convertidosm vetores
-        retriever = vectorstore.as_retriever() #retriever permite que o banco de dados seja utilizado como busca para puxar as informações
+        vectorstore = FAISS.from_documents(documents, embeddings)  # FAISS é um 'banco de dados vetoriais' que permite guardar os documentos já convertidos em vetores.
+        retriever = vectorstore.as_retriever()  # retriever permite que o banco de dados seja utilizado como busca para puxar as informações.
         return retriever
     except Exception as e:
         st.error(f"Erro ao carregar dados CSV: {e}")
