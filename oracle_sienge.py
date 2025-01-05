@@ -31,7 +31,7 @@ def load_csv_data():
     try:
         st.write("Carregando dados CSV...")  # Log para depuração
         file_path = "knowledge_base_sienge.csv"
-        absolute_path = os.path.abspath(file_path)
+        absolute_path = os.path.abspath(file_path, encoding='utf-8')
         st.write(f"Caminho absoluto do arquivo CSV: {absolute_path}")
         
         if not Path(file_path).is_file():
