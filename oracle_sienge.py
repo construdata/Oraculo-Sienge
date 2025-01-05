@@ -30,7 +30,7 @@ llm = ChatOpenAI()
 def load_csv_data():
     try:
         st.write("Carregando dados CSV...")  # Log para depuração
-        file_path = "knowledge_base_sienge.csv"
+        file_path = "/mount/src/oraculo-sienge/knowledge_base_sienge.csv"
         absolute_path = os.path.abspath(file_path)
         st.write(f"Caminho absoluto do arquivo CSV: {absolute_path}")
         
