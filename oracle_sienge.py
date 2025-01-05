@@ -10,6 +10,7 @@ from langchain_community.embeddings import OllamaEmbeddings, OpenAIEmbeddings #D
 from openai import OpenAI
 from langchain_openai.embeddings import OpenAIEmbeddings
 from langchain_openai import ChatOpenAI
+from pathlib import Path    
 
 # Carrega variáveis de ambiente e chaves de acesso.
 _ = load_dotenv(find_dotenv())
@@ -27,12 +28,14 @@ llm = ChatOpenAI()
 @st.cache_resource #avaliar o uso do st.cache_data, pois não rodou.. mesmo sendo a indicação da Asimov
 def load_csv_data():
     try:
-        # Substituia aqui por sua base de conhecimentos.
-        loader = CSVLoader(file_path="knowledge_base_sienge.csv") #Documento csv com os dados específicos, exemplo FAQ da empresa.
-        embeddings = OpenAIEmbeddings() # O Embedding permite transformar textos em números (vetores) e facilitar a localização de documentos semelhantes.
+        base_path = Path(__file__).parent  # Diretório atual do script
+        csv_path = base_path / "knowledge_base_sienge.csv"
+        
+        loader = CSVLoader(file_path=str(csv_path))
+        embeddings = OpenAIEmbeddings()
         documents = loader.load()
-        vectorstore = FAISS.from_documents(documents, embeddings) #FAISS é um 'banco de dados vetoriais' que permite guardar os documentos já convertidosm vetores
-        retriever = vectorstore.as_retriever() #retriever permite que o banco de dados seja utilizado como busca para puxar as informações
+        vectorstore = FAISS.from_documents(documents, embeddings)
+        retriever = vectorstore.as_retriever()
         return retriever
     except Exception as e:
         st.error(f"Erro ao carregar dados CSV: {e}")
