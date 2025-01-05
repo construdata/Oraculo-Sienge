@@ -28,9 +28,10 @@ llm = ChatOpenAI()
 @st.cache_resource #avaliar o uso do st.cache_data, pois não rodou.. mesmo sendo a indicação da Asimov
 def load_csv_data():
     try:
-        base_path = Path(__file__).parent  # Diretório atual do script
-        csv_path = base_path / "knowledge_base_sienge.csv"
-        
+        # Determina o caminho do CSV dinamicamente
+        csv_path = Path(__file__).parent / "knowledge_base_sienge.csv"
+
+        # Carrega o CSV
         loader = CSVLoader(file_path=str(csv_path))
         embeddings = OpenAIEmbeddings()
         documents = loader.load()
